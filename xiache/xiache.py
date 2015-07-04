@@ -23,7 +23,7 @@ def get_xiache_list():  # 获取JSON格式全部瞎扯信息，保存为数组
     con_json = json.loads(con)  # 使用json模块处理
     xiache_list.extend(con_json['stories'])  # 需要的JSON信息
     print(con_json['timestamp'])
-    while(1):
+    while 1:
         try:
             time = con_json['timestamp']  # 终止条件为不含有timestamp变量
         except Exception:
@@ -46,7 +46,7 @@ def get_xiache_content():  # 获取瞎扯内容
         q.put(str(item['id']))  # 瞎扯URL后缀
     url = 'http://news-at.zhihu.com/api/4/story/'  # 此URL与瞎扯URL后缀拼接
     opener = urllib.request.build_opener()
-    while(not q.empty()):
+    while not q.empty():
         xiache_id = q.get()
         get = urllib.request.Request(
             url=url + xiache_id, headers=headers, method='GET')
