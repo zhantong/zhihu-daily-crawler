@@ -1,0 +1,50 @@
+html {
+	font-family: 'Helvetica Neue', Helvetica, Arial, Sans-serif;
+}
+h1 {
+	font-size: 8px;
+	text-align:center;
+}
+.avatar {
+	width:20px;
+	height: 20px;
+}
+.author {
+	font-weight: bold;
+	font-size: 8px;
+	background: #ffffbb;
+	border-radius:5px;
+}
+.bio {
+	color: #b8b8b8;
+	font-size: 8px;
+}
+.content {
+	  margin: 10px 0 20px;
+	  font-size: 12px;
+	  line-height: 1.2em;
+}
+.question {
+	border-top: 5px solid #CCCCCC;
+}
+.question-title {
+	font-size: 12px;
+	margin-top: 10px;
+	margin-bottom: 2px;
+}
+.view-more {
+	margin-bottom: 10px;
+	text-align: center;
+}
+.view-more a{
+	background: #f0f0f0;
+	color: #B8B8B8;
+	height: 25px;
+	line-height: 25px;
+	width: 100%;
+	display: block;
+	font-size: 10px;
+}
+img {
+	margin:5px 0;
+}
