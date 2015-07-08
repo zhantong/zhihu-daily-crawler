@@ -16,16 +16,17 @@ q = queue.Queue()  # URL后缀队列
 q_img = queue.Queue()  # 下载图片队列
 xiache_list = []  # JSON格式，其中包含瞎扯URL后缀
 content_list = []  # JSON格式，包含每日瞎扯内容
+content = '' #HTML格式，全部瞎扯内容
 headers = {  # 模拟浏览器
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.124 Safari/537.36'
 }
 file_name = 'final.html'  # 最终生成的文件名，还包括图片文件夹名
-
+section='1'
 
 def get_xiache_list():  # 获取JSON格式全部瞎扯信息，保存为数组
     print('获取链接地址...')
     # 最先访问URL，只提供最近18天的瞎扯URL信息
-    url = 'http://news-at.zhihu.com/api/4/section/2'
+    url = 'http://news-at.zhihu.com/api/4/section/'+section
     opener = urllib.request.build_opener()
     get = urllib.request.Request(url=url, headers=headers, method='GET')
     con = opener.open(get).read().decode('utf-8')
@@ -87,8 +88,8 @@ def get_xiache_content():  # 获取瞎扯内容
 
 
 def to_html():
+    global content
     print('开始转换为HTML格式')
-    content = ''
     # list中dict按'id'排序，逆序
     content_list.sort(key=lambda obj: obj.get('id'), reverse=True)
     for line_json in content_list:  # 对每天的瞎扯操作
@@ -99,8 +100,8 @@ def to_html():
         for question in r:
             content = content + question + '\n</div>\n'
         content = content + '</div>\n'
-    with codecs.open('content.html', 'w', 'utf-8') as f:  # 写入到本地文件
-        f.write(content)
+#    with codecs.open('content.html', 'w', 'utf-8') as f:  # 写入到本地文件
+#        f.write(content)
     print('格式转换成功，已写入到本地文件！')
 
 
@@ -123,8 +124,9 @@ def dl_img():  # 下载HTML中链接的图片到本地，便于电子书制作
 
 
 def post_work():  # 包括去除作者头像图片，和替换HTML中图片链接，并生成下载图片队列
-    with codecs.open('content.html', 'r', 'utf-8') as f:
-        content = f.read()
+    global content
+#    with codecs.open('content.html', 'r', 'utf-8') as f:
+#        content = f.read()
     content = re.sub(r'<img class="avatar".*?>', '', content)
     r = re.findall(r'src="(.*?jpg)"', content)
     for url in r:
