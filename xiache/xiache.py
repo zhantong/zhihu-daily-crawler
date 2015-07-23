@@ -21,7 +21,7 @@ headers = {  # 模拟浏览器
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.124 Safari/537.36'
 }
 file_name = 'final.html'  # 最终生成的文件名，还包括图片文件夹名
-section='1'
+section='2'
 def get_section():
     url='http://news-at.zhihu.com/api/3/sections'
     opener = urllib.request.build_opener()
@@ -30,7 +30,7 @@ def get_section():
     con_json = json.loads(con)
     for section in con_json['data']:
         print(section['id'],section['name'],section['description'])
-def get_xiache_list():  # 获取JSON格式全部瞎扯信息，保存为数组
+def get_xiache_list(start_date='20150101',end_date='20150722'):  # 获取JSON格式全部瞎扯信息，保存为数组
     print('获取链接地址...')
     # 最先访问URL，只提供最近18天的瞎扯URL信息
     url = 'http://news-at.zhihu.com/api/4/section/'+section
@@ -38,7 +38,10 @@ def get_xiache_list():  # 获取JSON格式全部瞎扯信息，保存为数组
     get = urllib.request.Request(url=url, headers=headers, method='GET')
     con = opener.open(get).read().decode('utf-8')
     con_json = json.loads(con)  # 使用json模块处理
-    xiache_list.extend(con_json['stories'])  # 需要的JSON信息
+    for item in con_json['stories']:
+        if item['date']>=start_date and item['date']<=end_date:
+            xiache_list.append(item)
+    #xiache_list.extend(con_json['stories'])  # 需要的JSON信息
     while 1:
         try:
             time = con_json['timestamp']  # 终止条件为不含有timestamp变量
@@ -53,7 +56,10 @@ def get_xiache_list():  # 获取JSON格式全部瞎扯信息，保存为数组
             print(e)
             break
         con_json = json.loads(con)
-        xiache_list.extend(con_json['stories'])  # 加入数组
+        for item in con_json['stories']:
+            if item['date']>=start_date and item['date']<=end_date:
+                xiache_list.append(item)
+        #xiache_list.extend(con_json['stories'])  # 加入数组
 
 
 def trans_header(date, title):  # 作为HTML及电子书分隔每天瞎扯的标题
@@ -152,8 +158,8 @@ def post_work():  # 包括去除作者头像图片，和替换HTML中图片链�
     print('已删除作者头像，并下载全部链接图片！')
 
 if __name__ == '__main__':
-#    get_xiache_list()
-#    get_xiache_content()
-#    to_html()
-#    post_work()
-    get_section()
+    get_xiache_list()
+    get_xiache_content()
+    to_html()
+    post_work()
+#    get_section()
