@@ -22,7 +22,14 @@ headers = {  # 模拟浏览器
 }
 file_name = 'final.html'  # 最终生成的文件名，还包括图片文件夹名
 section='1'
-
+def get_section():
+    url='http://news-at.zhihu.com/api/3/sections'
+    opener = urllib.request.build_opener()
+    get = urllib.request.Request(url=url, headers=headers, method='GET')
+    con = opener.open(get).read().decode('utf-8')
+    con_json = json.loads(con)
+    for section in con_json['data']:
+        print(section['id'],section['name'],section['description'])
 def get_xiache_list():  # 获取JSON格式全部瞎扯信息，保存为数组
     print('获取链接地址...')
     # 最先访问URL，只提供最近18天的瞎扯URL信息
@@ -145,7 +152,8 @@ def post_work():  # 包括去除作者头像图片，和替换HTML中图片链�
     print('已删除作者头像，并下载全部链接图片！')
 
 if __name__ == '__main__':
-    get_xiache_list()
-    get_xiache_content()
-    to_html()
-    post_work()
+#    get_xiache_list()
+#    get_xiache_content()
+#    to_html()
+#    post_work()
+    get_section()
