@@ -114,7 +114,13 @@ def dl_img():  # 下载HTML中链接的图片到本地，便于电子书制作
             img_url = q_img.get()
             get = urllib.request.Request(
                 url=img_url, headers=headers, method='GET')
-            img_b = opener.open(get).read()
+            try:
+                img_b = opener.open(get).read()
+            except Exception as e:
+                print(e)
+                print('重新下载...')
+                q_img.put(img_url)
+                continue
             with open(file_name.split('.')[-2] + '_files/' + img_url.split('/')[-1], 'wb') as f:
                 f.write(img_b)
     if not os.path.exists(file_name.split('.')[-2] + '_files'):
