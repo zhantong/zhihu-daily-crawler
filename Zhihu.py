@@ -7,7 +7,7 @@ import urllib.request
 import codecs
 import re
 import os
-import baseclass  # 一些常用函数
+import BaseClass  # 一些常用函数
 
 headers = {  # 模拟浏览器
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.124 Safari/537.36'
@@ -16,7 +16,7 @@ headers = {  # 模拟浏览器
 file_name = 'final.html'  # 最终生成的文件名，还包括图片文件夹名
 
 
-class Zhihu(baseclass.BaseClass):
+class Zhihu(BaseClass.BaseClass):
     def __init__(self):
         self.info_list = []
         self.titles = {}
@@ -24,7 +24,7 @@ class Zhihu(baseclass.BaseClass):
         self.content_list = []
         self.content = ''
         self.img_url_queue = queue.Queue()
-        baseclass.BaseClass.__init__(self)
+        BaseClass.BaseClass.__init__(self)
 
     def get_section(self):  # 获取知乎日报所有栏目信息
         url = 'http://news-at.zhihu.com/api/3/sections'
