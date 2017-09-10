@@ -8,16 +8,15 @@ import codecs
 import re
 import os
 import baseclass  # 一些常用函数
+
 headers = {  # 模拟浏览器
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.124 Safari/537.36'
 }
 
 file_name = 'final.html'  # 最终生成的文件名，还包括图片文件夹名
-section = '2'  # 选择需要爬取哪个栏目
 
 
 class Zhihu(baseclass.BaseClass):
-
     def __init__(self):
         self.info_list = []
         self.titles = {}
@@ -35,7 +34,7 @@ class Zhihu(baseclass.BaseClass):
             print(section['id'], section['name'], section['description'])
 
     # 获取JSON格式指定栏目、日期区间信息
-    def get_list(self, start_date='20150701', end_date='20150722'):
+    def get_list(self, section, start_date, end_date):
         print('获取链接地址...')
         # 最先访问URL，只提供最近18天的瞎扯URL信息
         url = 'http://news-at.zhihu.com/api/4/section/' + section
@@ -65,12 +64,12 @@ class Zhihu(baseclass.BaseClass):
                     self.titles[item['id']] = self.trans_header(
                         item['date'], item['title'])
                     self.id_queue.put(str(item['id']))
-            # xiache_list.extend(con_json['stories'])  # 加入数组
+                    # xiache_list.extend(con_json['stories'])  # 加入数组
 
     def trans_header(self, date, title):  # 作为HTML及电子书分隔每天瞎扯的标题
         trans = date[0:4] + '年' + str(int(date[4:6])) + \
-            '月' + str(int(date[6:8])) + '日' + '  ' + \
-            title  # 如“2015年7月4日  瞎扯·如何正确吐槽”
+                '月' + str(int(date[6:8])) + '日' + '  ' + \
+                title  # 如“2015年7月4日  瞎扯·如何正确吐槽”
         return trans
 
     def get_content(self):  # 获取内容
@@ -83,6 +82,7 @@ class Zhihu(baseclass.BaseClass):
                     url=url + xiache_id, headers=headers, method='GET')
                 con = opener.open(get).read().decode('utf-8')
                 self.content_list.append(json.loads(con))  # 将虽有内容首先串成list
+
         print('获取内容...（视网络情况可能需要一定时间）')
         self.multi_thread(10, dl)
         print('全部内容获取完！')
@@ -96,8 +96,8 @@ class Zhihu(baseclass.BaseClass):
         for line_json in self.content_list:  # 对每天的瞎扯操作
             questions = r_question.findall(line_json['body'])
             self.content = self.content + '<div class="day">\n<h1>' + \
-                self.titles[line_json['id']] + \
-                '</h1>\n'  # 添加一层div，以及一个h1标题，输入日期标题
+                           self.titles[line_json['id']] + \
+                           '</h1>\n'  # 添加一层div，以及一个h1标题，输入日期标题
             for question in questions:
                 self.content = self.content + question + '\n</div>\n'
             self.content = self.content + '</div>\n'
@@ -108,7 +108,7 @@ class Zhihu(baseclass.BaseClass):
 
         def getting():  # 便于多进程处理
             opener = urllib.request.build_opener()
-            while(not self.img_url_queue.empty()):
+            while (not self.img_url_queue.empty()):
                 img_url = self.img_url_queue.get()
                 get = urllib.request.Request(
                     url=img_url, headers=headers, method='GET')
@@ -121,6 +121,7 @@ class Zhihu(baseclass.BaseClass):
                     continue
                 with open(file_name.split('.')[-2] + '_files/' + img_url.split('/')[-1], 'wb') as f:
                     f.write(img_b)
+
         if not os.path.exists(file_name.split('.')[-2] + '_files'):
             os.mkdir(file_name.split('.')[-2] + '_files')
         self.multi_thread(20, getting)
@@ -138,11 +139,13 @@ class Zhihu(baseclass.BaseClass):
         self.dl_img()
         print('已删除作者头像，并下载全部链接图片！')
 
-    def start(self):  # 打包运行
-        self.get_list()
+    def start(self, section='2', start_date='20170401', end_date='20170910'):  # 打包运行
+        self.get_list(section, start_date, end_date)
         self.get_content()
         self.to_html()
         self.post_work()
+
+
 if __name__ == '__main__':
     zhihu = Zhihu()
     zhihu.start()
